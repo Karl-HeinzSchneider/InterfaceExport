@@ -1,12 +1,12 @@
-WoW Interface Export (fork)
+Fork
 ====================
-
 This fork fixes the tool for the use on windows, and provides .bat files for automation.
 
 ### Usage ###
 * clone the project
 * get the win64 (modified) lua runtime from [here](https://www.townlong-yak.com/casc/) => Dependencies => Win64 => `lua52-m64.exe`, and copy it into the project root
-* 
+* run it like so: `lua52-m64.exe export.lua classic live code` (command line settings see below), or use one of the provided .bat files, e.g. `classic-live-code.bat`
+* locate the files inside the `\_files` folder, e.g. `\_files\wow_classic\Interface`
 
 # WoW Interface Export #
 
