@@ -70,7 +70,7 @@ local plat = require("casc.platform")
 local dbc = require("dbc")
 local csv = pcall(require, "csv")
 
-local WOWDIR = "D::/Spiele/World of Warcraft"
+local WOWDIR = "D:/Spiele/World of Warcraft"
 local CACHE_DIR = "./InterfaceExport/Cache/" .. product
 local REGION = "us"
 local PATCH_BASE = ("http://%s.patch.battle.net:1119/%s"):format(REGION, product)
