@@ -64,7 +64,7 @@ filter = filter or "all"
 write("Extracting %s from %s %s...", filter, project, branch)
 local product = projects[project] .. branches[branch]
 
-package.path = ";;.\\InterfaceExport\\libs\\?.lua;.\\InterfaceExport\\libs\\?\\init.lua"
+package.path = ";;..\\InterfaceExport\\libs\\?.lua;..\\InterfaceExport\\libs\\?\\init.lua"
 local casc = require("casc")
 local plat = require("casc.platform")
 local dbc = require("dbc")
