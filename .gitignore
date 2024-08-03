@@ -2,6 +2,8 @@ Blizzard*/
 Cache/
 fails*.txt
 version.txt
+*.exe
+*.bat
 
 ## Sublime Text ##
 *.sublime-workspace
