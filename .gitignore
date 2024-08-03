@@ -4,6 +4,7 @@ fails*.txt
 version.txt
 *.exe
 *.bat
+_files
 
 ## Sublime Text ##
 *.sublime-workspace

@@ -269,7 +269,7 @@ local ExtractFiles
 do
     function ExtractFiles(fileType)
         local files = GetFileList(fileType)
-        local root = "./"
+        local root = "./_files/" .. product
         if filter == "all" then root = "BlizzardInterface" .. fileTypes[fileType] end
         local dirs = CreateDirectories(files, root)
 
