@@ -1,8 +1,8 @@
 local project, branch, filter = ...
 
---luacheck: globals require assert pcall type
---luacheck: globals tostring setmetatable
---luacheck: globals table io next os package
+-- luacheck: globals require assert pcall type
+-- luacheck: globals tostring setmetatable
+-- luacheck: globals table io next os package
 
 local function write(text, ...)
     _G.print(text:format(...))
@@ -14,7 +14,7 @@ local projects = {
     bcc = "wow_classic",
     wrath = "wow_classic",
     classic_era = "wow_classic_era",
-    vanilla = "wow_classic_era",
+    vanilla = "wow_classic_era"
 }
 local branches = {
     live = "",
@@ -23,13 +23,9 @@ local branches = {
     beta = "_beta",
 
     -- Classic PTR
-    ptrC = "_ptr",
+    ptrC = "_ptr"
 }
-local fileTypes = {
-    all = true,
-    code = "Code",
-    art = "Art",
-}
+local fileTypes = {all = true, code = "Code", art = "Art"}
 
 if project then
     if branches[project] then
@@ -48,9 +44,7 @@ if project then
         branch = "live"
     end
 
-    if project ~= "retail" and branch == "ptr" then
-        branch = "ptrC"
-    end
+    if project ~= "retail" and branch == "ptr" then branch = "ptrC" end
 else
     project, branch, filter = "retail", "live", "all"
 end
@@ -84,12 +78,13 @@ local FILEID_PATH_MAP = {
     ["DBFilesClient/ManifestInterfaceData.db2"] = 1375801,
     ["DBFilesClient/GlobalStrings.db2"] = 1394440,
     ["DBFilesClient/UiTextureAtlas.db2"] = 897470,
-    ["DBFilesClient/UiTextureAtlasMember.db2"] = 897532,
+    ["DBFilesClient/UiTextureAtlasMember.db2"] = 897532
 }
 
-local rmdir, convert do
+local rmdir, convert
+do
     -- Based on code from casc.platform
-    local dir_sep = package and package.config and package.config:sub(1,1) or "/"
+    local dir_sep = package and package.config and package.config:sub(1, 1) or "/"
     local command = "rmdir %s"
     if dir_sep == '/' then
         -- *nix
@@ -117,13 +112,12 @@ local rmdir, convert do
     end
 end
 
-local fileHandle do
+local fileHandle
+do
     local function selectBuild(buildInfo)
         for i = 1, #buildInfo do
-            --print(buildInfo[i].Product, buildInfo[i].Active)
-            if buildInfo[i].Product == product and buildInfo[i].Active == 1 then
-                return i
-            end
+            -- print(buildInfo[i].Product, buildInfo[i].Active)
+            if buildInfo[i].Product == product and buildInfo[i].Active == 1 then return i end
             assert(0)
         end
     end
@@ -160,50 +154,43 @@ local fileHandle do
         cache = CACHE_DIR,
         cacheFiles = true,
         locale = casc.locale.US,
-        requireRootFile = false,
-        --verifyHashes = false,
-        --log = print
+        requireRootFile = false
+        -- verifyHashes = false,
+        -- log = print
     }
 
     fileHandle = assert(casc.open(conf))
 end
 
-local GetFileList do
-    local fileFilter = {
-        xml = "code",
-        lua = "code",
-        toc = "code",
-        xsd = "code",
+local GetFileList
+do
+    local fileFilter = {xml = "code", lua = "code", toc = "code", xsd = "code", blp = "art"}
 
-        blp = "art"
-    }
+    local params = {header = true}
 
-    local params = {
-        header = true,
-    }
-
-    local l = setmetatable({}, {__index=function(s, a) s[a] = a:lower() return s[a] end})
+    local l = setmetatable({}, {
+        __index = function(s, a)
+            s[a] = a:lower()
+            return s[a]
+        end
+    })
     local function SortPath(a, b)
         return l[a.fullPath] < l[b.fullPath]
     end
 
     local function CheckFile(fileType, files, id, path, name)
-        --print(_, path, name)
+        -- print(_, path, name)
         if fileFilter[(name:match("%.(...)$") or ""):lower()] == fileType then
             path = path:gsub("[/\\]+", "/")
 
-            --print("CheckFile", path)
-            files[#files + 1] = {
-                path = path,
-                id = id,
-                fullPath = path .. name,
-            }
+            -- print("CheckFile", path)
+            files[#files + 1] = {path = path, id = id, fullPath = path .. name}
         end
     end
 
     function GetFileList(fileType)
         local files = {}
-        if csv and io.open("manifestinterfacedata.csv", "r")then
+        if csv and io.open("manifestinterfacedata.csv", "r") then
             -- from wow.tools table browser
             local csvFile = csv.open("manifestinterfacedata.csv", params)
             for fields in csvFile:lines() do
@@ -225,12 +212,11 @@ local GetFileList do
     end
 end
 
-
 local progress = 0
 local function UpdateProgress(current)
-    --if collectgarbage("count") > gcLimit then
+    -- if collectgarbage("count") > gcLimit then
     --    collectgarbage()
-    --end
+    -- end
 
     if (current - progress) > 0.1 then
         write("%d%%", current * 100)
@@ -242,8 +228,8 @@ local function UpdateProgress(current)
     end
 end
 
-
-local CreateDirectories do
+local CreateDirectories
+do
     function CreateDirectories(files, root)
         local dirs = {}
         for i = 1, #files do
@@ -253,16 +239,14 @@ local CreateDirectories do
                 local subLower = subPath:lower()
 
                 if not dirs[subLower] then
-                    --print("dir", path, subPath, subLower)
+                    -- print("dir", path, subPath, subLower)
                     dirs[subLower] = subPath
                 end
             end
         end
 
         local makeDirs = {}
-        for _, subPath in next, dirs do
-            table.insert(makeDirs, subPath)
-        end
+        for _, subPath in next, dirs do table.insert(makeDirs, subPath) end
         table.sort(makeDirs)
 
         write("Creating %d folders...", #makeDirs)
@@ -281,20 +265,18 @@ local CreateDirectories do
     end
 end
 
-
-local ExtractFiles do
+local ExtractFiles
+do
     function ExtractFiles(fileType)
         local files = GetFileList(fileType)
         local root = "./"
-        if filter == "all" then
-            root = "BlizzardInterface" .. fileTypes[fileType]
-        end
+        if filter == "all" then root = "BlizzardInterface" .. fileTypes[fileType] end
         local dirs = CreateDirectories(files, root)
 
         local file, filePath, fixedCase
         local function FixCase(b)
             local s = filePath:sub(1, b - 1)
-            --print("fixedCase", filePath, b, s)
+            -- print("fixedCase", filePath, b, s)
             return dirs[s:lower()]:match("([^/]+/)$")
         end
 
@@ -304,9 +286,7 @@ local ExtractFiles do
             file = files[i]
             filePath = file.fullPath
             fixedCase = (filePath:gsub("[^/]+()/", FixCase))
-            if not pathStatus[file.path] then
-                pathStatus[file.path] = 0
-            end
+            if not pathStatus[file.path] then pathStatus[file.path] = 0 end
 
             w = fileHandle:readFile(file.fullPath)
             if w then
@@ -317,9 +297,7 @@ local ExtractFiles do
                     h:close()
                     pathStatus[file.path] = pathStatus[file.path] + 1
 
-                    if convertBLP then
-                        convert(plat.path(root, file.path))
-                    end
+                    if convertBLP then convert(plat.path(root, file.path)) end
                 else
                     write("Could not open file %s: %s", filePath, err)
                 end
@@ -330,11 +308,7 @@ local ExtractFiles do
         end
 
         local emptyDirs = {}
-        for path, total in next, pathStatus do
-            if total <= 0 then
-                table.insert(emptyDirs, path)
-            end
-        end
+        for path, total in next, pathStatus do if total <= 0 then table.insert(emptyDirs, path) end end
 
         table.sort(emptyDirs, function(a, b)
             return a > b
@@ -343,13 +317,10 @@ local ExtractFiles do
         write("Cleaning up empty directories...")
         for i = 1, #emptyDirs do
             local _, status = rmdir(plat.path(root, emptyDirs[i]))
-            if not status then
-                write("Removed: %s", emptyDirs[i])
-            end
+            if not status then write("Removed: %s", emptyDirs[i]) end
         end
     end
 end
-
 
 if filter == "all" then
     ExtractFiles("code")
