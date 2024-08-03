@@ -1,5 +1,14 @@
-WoW Interface Export
+WoW Interface Export (fork)
 ====================
+
+This fork fixes the tool for the use on windows, and provides .bat files for automation.
+
+### Usage ###
+* clone the project
+* get the win64 (modified) lua runtime from [here](https://www.townlong-yak.com/casc/) => Dependencies => Win64 => `lua52-m64.exe`, and copy it into the project root
+* 
+
+# WoW Interface Export #
 
 This tool that will extract the interface files for World of Warcraft, either from a local install or from the CDN.
 
